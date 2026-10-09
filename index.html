@@ -198,57 +198,15 @@
     <h1>✨ La Boîte à Défis ✨</h1>
     <div class="stars-counter">Étoiles gagnées : <span id="stars">0</span> ⭐</div>
     
-    <div class="filter-group">
-      <button class="filter-btn active" onclick="setCategory('Tous', this)">🎲 Tous</button>
-      <button class="filter-btn" onclick="setCategory('🏃 Mouvement', this)">🏃 Mouvement</button>
-      <button class="filter-btn" onclick="setCategory('🎭 Duo & Mime', this)">🎭 Duo & Mime</button>
-      <button class="filter-btn" onclick="setCategory('🎨 Créativité', this)">🎨 Créativité</button>
-      <button class="filter-btn" onclick="setCategory('🧠 Énigme', this)">🧠 Énigme</button>
+    <div class="filter-group" id="filterContainer">
+      <button class="filter-btn active" data-cat="Tous">🎲 Tous</button>
+      <button class="filter-btn" data-cat="🏃 Mouvement">🏃 Mouvement</button>
+      <button class="filter-btn" data-cat="🎭 Duo & Mime">🎭 Duo & Mime</button>
+      <button class="filter-btn" data-cat="🎨 Créativité">🎨 Créativité</button>
+      <button class="filter-btn" data-cat="🧠 Énigme">🧠 Énigme</button>
     </div>
   </header>
 
   <div class="card" id="cardElement">
     <div id="category" class="challenge-category">Prêtes à jouer ?</div>
-    <div id="challenge" class="challenge-text">Appuyez sur le bouton ci-dessous pour piocher un défi !</div>
-    <div id="timer" class="timer-display" style="display:none;">00:30</div>
-
-    <div class="btn-group" style="flex-direction: column;">
-      <button class="btn-main" onclick="drawChallenge()">🎲 Tirer un Défi !</button>
-      <div class="btn-group" style="margin-top: 10px;">
-        <button class="btn-secondary" onclick="speakText()">🔊 Écouter</button>
-        <button class="btn-secondary" id="timerBtn" onclick="startTimer()" style="display:none;">⏱️ Chrono</button>
-        <button class="btn-secondary" onclick="completeChallenge()">✅ Réussi !</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const challenges = [
-      { cat: "🏃 Mouvement", text: "Faire 5 sauts de grenouille sans s'arrêter !", time: 30 },
-      { cat: "🎭 Duo & Mime", text: "Mimer un animal chacun votre tour : l'autre doit deviner !", time: 60 },
-      { cat: "🎨 Créativité", text: "Trouver 3 objets rouges dans la pièce en moins de 30 secondes !", time: 30 },
-      { cat: "🧠 Énigme", text: "Qu'est-ce qui a des clés mais ne peut ouvrir aucune porte ? (Un piano !)", time: 40 },
-      { cat: "🏃 Mouvement", text: "Tenir en équilibre sur un pied pendant 20 secondes comme un flamant rose !", time: 20 },
-      { cat: "🎭 Duo & Mime", text: "Inventer une poignée de main secrète ensemble et la répéter 2 fois !", time: 40 },
-      { cat: "🎨 Créativité", text: "Faire le plus bel origami ou dessin rapide en 1 minute !", time: 60 },
-      { cat: "🏃 Mouvement", text: "Faire le tour de la table en marchant à reculons prudemment !", time: 30 }
-    ];
-
-    let selectedCat = 'Tous';
-    let currentChallenge = null;
-    let stars = 0;
-    let timerInterval = null;
-    let timeLeft = 0;
-    let audioCtx = null;
-
-    try {
-      stars = parseInt(localStorage.getItem('defis_stars') || '0', 10);
-    } catch(e) {}
-    
-    document.getElementById('stars').innerText = stars;
-
-    function safePlaySound(freq, duration, type) {
-      try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContextClass) return;
-        if (!audioCtx)
+    <div id="challenge" class="challenge-text">Appuyez sur le bouton ci-dessous pour
