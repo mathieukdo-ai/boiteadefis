@@ -4,14 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Boîte à Défis</title>
-  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4f46e5">
   <style>
     :root {
       --bg-primary: #1e1b4b;
       --card-bg: #2e1065;
       --accent: #f59e0b;
-      --accent-hover: #d97706;
       --text: #ffffff;
       --text-muted: #c084fc;
     }
@@ -53,7 +51,6 @@
       display: inline-block;
     }
 
-    /* Filtres de catégorie */
     .filter-group {
       display: flex;
       gap: 8px;
@@ -81,7 +78,6 @@
       border-color: #f59e0b;
     }
 
-    /* Carte de défi */
     .card {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(10px);
@@ -97,13 +93,13 @@
     }
 
     .card.draw-anim {
-      animation: popCard 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: popCard 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     @keyframes popCard {
-      0% { transform: scale(0.9) rotate(-2deg); opacity: 0.5; }
-      50% { transform: scale(1.04) rotate(1deg); }
-      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      0% { transform: scale(0.95); opacity: 0.7; }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     .challenge-category {
@@ -168,216 +164,4 @@
       font-size: 1.2rem;
       padding: 16px 28px;
       width: 100%;
-      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
-    }
-
-    .btn-main:hover {
-      background: linear-gradient(135deg, #d97706, #db2777);
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.15);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.25);
-    }
-
-    canvas#confetti {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 99;
-    }
-  </style>
-</head>
-<body>
-
-  <canvas id="confetti"></canvas>
-
-  <header>
-    <h1>✨ La Boîte à Défis ✨</h1>
-    <div class="stars-counter">Étoiles gagnées : <span id="stars">0</span> ⭐</div>
-  </header>
-
-  <!-- Filtres pour choisir son type de défi -->
-  <div class="filter-group">
-    <button class="filter-btn active" onclick="setCategory('Tous', this)">🎲 Tous</button>
-    <button class="filter-btn" onclick="setCategory('🏃 Mouvement', this)">🏃 Mouvement</button>
-    <button class="filter-btn" onclick="setCategory('🎭 Duo & Mime', this)">🎭 Duo & Mime</button>
-    <button class="filter-btn" onclick="setCategory('🎨 Créativité', this)">🎨 Créativité</button>
-    <button class="filter-btn" onclick="setCategory('🧠 Énigme', this)">🧠 Énigme</button>
-  </div>
-
-  <div class="card" id="cardElement">
-    <div id="category" class="challenge-category">Prêtes à jouer ?</div>
-    <div id="challenge" class="challenge-text">Appuyez sur le bouton ci-dessous pour piocher un défi !</div>
-    <div id="timer" class="timer-display" style="display:none;">00:30</div>
-
-    <div class="btn-group" style="flex-direction: column;">
-      <button class="btn-main" onclick="drawChallenge()">🎲 Tirer un Défi !</button>
-      <div class="btn-group" style="margin-top: 10px;">
-        <button class="btn-secondary" onclick="speakText()">🔊 Écouter</button>
-        <button class="btn-secondary" id="timerBtn" onclick="startTimer()" style="display:none;">⏱️ Chrono</button>
-        <button class="btn-secondary" onclick="completeChallenge()">✅ Réussi !</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const challenges = [
-      { cat: "🏃 Mouvement", text: "Faire 5 sauts de grenouille sans s'arrêter !", time: 30 },
-      { cat: "🎭 Duo & Mime", text: "Mimer un animal chacun votre tour : l'autre doit deviner !", time: 60 },
-      { cat: "🎨 Créativité", text: "Trouver 3 objets rouges dans la pièce en moins de 30 secondes !", time: 30 },
-      { cat: "🧠 Énigme", text: "Qu'est-ce qui a des clés mais ne peut ouvrir aucune porte ? (Un piano !)", time: 40 },
-      { cat: "🏃 Mouvement", text: "Tenir en équilibre sur un pied pendant 20 secondes comme un flamant rose !", time: 20 },
-      { cat: "🎭 Duo & Mime", text: "Inventer une poignée de main secrète ensemble et la répéter 2 fois !", time: 40 },
-      { cat: "🎨 Créativité", text: "Faire le plus bel origami ou dessin rapide en 1 minute !", time: 60 },
-      { cat: "🏃 Mouvement", text: "Faire le tour de la table en marchant à reculons prudemment !", time: 30 }
-    ];
-
-    let selectedCat = 'Tous';
-    let currentChallenge = null;
-    let stars = parseInt(localStorage.getItem('defis_stars') || '0');
-    let timerInterval = null;
-    let timeLeft = 0;
-
-    document.getElementById('stars').innerText = stars;
-
-    // Web Audio API
-    let audioCtx = null;
-    function initAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    function playSound(freq, duration, type = 'sine') {
-      initAudio();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.value = freq;
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-      osc.stop(audioCtx.currentTime + duration);
-    }
-
-    function setCategory(cat, btn) {
-      selectedCat = cat;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-
-    function drawChallenge() {
-      playSound(440, 0.1);
-      
-      clearInterval(timerInterval);
-      document.getElementById('timer').style.display = 'none';
-
-      // Animation carte
-      const card = document.getElementById('cardElement');
-      card.classList.remove('draw-anim');
-      void card.offsetWidth; // Force reflow
-      card.classList.add('draw-anim');
-
-      // Filtrer selon la catégorie sélectionnée
-      const pool = selectedCat === 'Tous' 
-        ? challenges 
-        : challenges.filter(c => c.cat === selectedCat);
-
-      const rand = Math.floor(Math.random() * pool.length);
-      currentChallenge = pool[rand];
-
-      document.getElementById('category').innerText = currentChallenge.cat;
-      document.getElementById('challenge').innerText = currentChallenge.text;
-      
-      document.getElementById('timerBtn').style.display = 'inline-block';
-      timeLeft = currentChallenge.time;
-    }
-
-    function speakText() {
-      if (!currentChallenge) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(currentChallenge.text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function startTimer() {
-      clearInterval(timerInterval);
-      const timerEl = document.getElementById('timer');
-      timerEl.style.display = 'block';
-      
-      timerInterval = setInterval(() => {
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          playSound(880, 0.4, 'triangle');
-          timerEl.innerText = "Temps écoulé ! 🔔";
-        } else {
-          playSound(300, 0.05);
-          const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-          const secs = String(timeLeft % 60).padStart(2, '0');
-          timerEl.innerText = `${mins}:${secs}`;
-          timeLeft--;
-        }
-      }, 1000);
-    }
-
-    function completeChallenge() {
-      if (!currentChallenge) return;
-      stars += 1;
-      localStorage.setItem('defis_stars', stars);
-      document.getElementById('stars').innerText = stars;
-      
-      playSound(523.25, 0.1);
-      setTimeout(() => playSound(659.25, 0.1), 100);
-      setTimeout(() => playSound(783.99, 0.3), 200);
-
-      launchConfetti();
-    }
-
-    function launchConfetti() {
-      const canvas = document.getElementById('confetti');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      const particles = Array.from({ length: 80 }).map(() => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        color: ['#f59e0b', '#ec4899', '#3b82f6', '#10b981', '#8b5cf6'][Math.floor(Math.random() * 5)],
-        size: Math.random() * 8 + 4,
-        speed: Math.random() * 4 + 2
-      }));
-
-      let frames = 0;
-      function render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {
-          p.y += p.speed;
-          ctx.fillStyle = p.color;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
-        });
-        frames++;
-        if (frames < 120) requestAnimationFrame(render);
-        else ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-      render();
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
-  </script>
-</body>
-</html>
+      box-shadow: 0 6px 20px rgba(245, 1
