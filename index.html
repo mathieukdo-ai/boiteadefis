@@ -4,209 +4,143 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>La Boîte à Défis</title>
-  <meta name="theme-color" content="#4f46e5">
   <style>
-    :root {
-      --bg-primary: #1e1b4b;
-      --card-bg: #2e1065;
-      --accent: #f59e0b;
-      --text: #ffffff;
-      --text-muted: #c084fc;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #2e1065, #0f172a);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      color: #fbbf24;
-      text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    }
-
-    .stars-counter {
-      margin-top: 8px;
-      font-size: 1.2rem;
-      background: rgba(255,255,255,0.1);
-      padding: 6px 16px;
-      border-radius: 20px;
-      display: inline-block;
-    }
-
-    .filter-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      max-width: 480px;
-      margin-top: 16px;
-    }
-
-    .filter-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .filter-btn.active {
-      background: #f59e0b;
-      color: #0f172a;
-      font-weight: bold;
-      border-color: #f59e0b;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
-      padding: 24px;
-      width: 100%;
-      max-width: 480px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      margin-bottom: 20px;
-      transition: transform 0.2s ease;
-    }
-
-    .card.draw-anim {
-      animation: popCard 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    @keyframes popCard {
-      0% { transform: scale(0.95); opacity: 0.7; }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .challenge-category {
-      display: inline-block;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .challenge-text {
-      font-size: 1.4rem;
-      font-weight: bold;
-      line-height: 1.4;
-      min-height: 90px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .timer-display {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #34d399;
-      margin-bottom: 15px;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    button {
-      background: #4f46e5;
-      color: white;
-      border: none;
-      padding: 14px 22px;
-      border-radius: 16px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      background: #4338ca;
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    .btn-main {
-      background: linear-gradient(135deg, #f59e0b, #ec4899);
-      font-size: 1.2rem;
-      padding: 16px 28px;
-      width: 100%;
-      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
-    }
-
-    .btn-main:hover {
-      background: linear-gradient(135deg, #d97706, #db2777);
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.15);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.25);
-    }
-
-    canvas#confetti {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 99;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background: #1e1b4b; color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; text-align: center; }
+    h1 { color: #fbbf24; margin-bottom: 10px; font-size: 2rem; }
+    .score { background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; margin-bottom: 20px; font-weight: bold; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; max-width: 400px; }
+    .filter-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; }
+    .filter-btn.active { background: #f59e0b; color: #000; font-weight: bold; border-color: #f59e0b; }
+    .card { background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .category { text-transform: uppercase; color: #c084fc; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; }
+    .text { font-size: 1.25rem; font-weight: bold; margin: 15px 0; min-height: 70px; display: flex; align-items: center; justify-content: center; }
+    .timer { font-size: 1.8rem; color: #34d399; font-weight: bold; margin-bottom: 15px; display: none; }
+    .btn-main { background: linear-gradient(135deg, #f59e0b, #ec4899); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; margin-bottom: 12px; }
+    .btn-row { display: flex; gap: 8px; justify-content: center; }
+    .btn-sub { background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 14px; border-radius: 10px; font-weight: bold; cursor: pointer; flex: 1; }
+    canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
   </style>
 </head>
 <body>
-
   <canvas id="confetti"></canvas>
+  <h1>✨ La Boîte à Défis ✨</h1>
+  <div class="score">Étoiles gagnées : <span id="stars">0</span> ⭐</div>
 
-  <header>
-    <h1>✨ La Boîte à Défis ✨</h1>
-    <div class="stars-counter">Étoiles gagnées : <span id="stars">0</span> ⭐</div>
-    
-    <div class="filter-group" id="filterContainer">
-      <button class="filter-btn active" data-cat="Tous">🎲 Tous</button>
-      <button class="filter-btn" data-cat="🏃 Mouvement">🏃 Mouvement</button>
-      <button class="filter-btn" data-cat="🎭 Duo & Mime">🎭 Duo & Mime</button>
-      <button class="filter-btn" data-cat="🎨 Créativité">🎨 Créativité</button>
-      <button class="filter-btn" data-cat="🧠 Énigme">🧠 Énigme</button>
+  <div class="filters">
+    <button class="filter-btn active" onclick="setCat('Tous', this)">🎲 Tous</button>
+    <button class="filter-btn" onclick="setCat('🏃 Mouvement', this)">🏃 Mouvement</button>
+    <button class="filter-btn" onclick="setCat('🎭 Duo & Mime', this)">🎭 Duo & Mime</button>
+    <button class="filter-btn" onclick="setCat('🎨 Créativité', this)">🎨 Créativité</button>
+    <button class="filter-btn" onclick="setCat('🧠 Énigme', this)">🧠 Énigme</button>
+  </div>
+
+  <div class="card">
+    <div id="catLabel" class="category">PRÊTES À JOUER ?</div>
+    <div id="challengeText" class="text">Appuyez sur le bouton ci-dessous pour piocher un défi !</div>
+    <div id="timerBox" class="timer">00:30</div>
+
+    <button class="btn-main" onclick="draw()">🎲 Tirer un Défi !</button>
+    <div class="btn-row">
+      <button class="btn-sub" onclick="listen()">🔊 Écouter</button>
+      <button class="btn-sub" id="timerBtn" onclick="startTimer()" style="display:none;">⏱️ Chrono</button>
+      <button class="btn-sub" onclick="win()">✅ Réussi !</button>
     </div>
-  </header>
+  </div>
 
-  <div class="card" id="cardElement">
-    <div id="category" class="challenge-category">Prêtes à jouer ?</div>
-    <div id="challenge" class="challenge-text">Appuyez sur le bouton ci-dessous pour
+  <script>
+    const list = [
+      { cat: "🏃 Mouvement", text: "Faire 5 sauts de grenouille sans s'arrêter !", time: 30 },
+      { cat: "🎭 Duo & Mime", text: "Mimer un animal chacun votre tour : l'autre doit deviner !", time: 60 },
+      { cat: "🎨 Créativité", text: "Trouver 3 objets rouges dans la pièce en moins de 30 secondes !", time: 30 },
+      { cat: "🧠 Énigme", text: "Qu'est-ce qui a des clés mais ne peut ouvrir aucune porte ? (Un piano !)", time: 40 },
+      { cat: "🏃 Mouvement", text: "Tenir en équilibre sur un pied pendant 20 secondes !", time: 20 },
+      { cat: "🎭 Duo & Mime", text: "Inventer une poignée de main secrète ensemble et la répéter 2 fois !", time: 40 },
+      { cat: "🎨 Créativité", text: "Faire le plus bel origami ou dessin rapide en 1 minute !", time: 60 }
+    ];
+
+    let currentCat = 'Tous';
+    let currentItem = null;
+    let stars = 0;
+    let timer = null;
+    let seconds = 0;
+
+    try { stars = parseInt(localStorage.getItem('defis_stars') || '0', 10); } catch(e){}
+    document.getElementById('stars').innerText = stars;
+
+    function setCat(cat, btn) {
+      currentCat = cat;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function draw() {
+      if (timer) clearInterval(timer);
+      document.getElementById('timerBox').style.display = 'none';
+      
+      const pool = currentCat === 'Tous' ? list : list.filter(i => i.cat === currentCat);
+      currentItem = pool[Math.floor(Math.random() * pool.length)];
+
+      document.getElementById('catLabel').innerText = currentItem.cat;
+      document.getElementById('challengeText').innerText = currentItem.text;
+      document.getElementById('timerBtn').style.display = 'inline-block';
+      seconds = currentItem.time;
+    }
+
+    function listen() {
+      if (!currentItem || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(currentItem.text);
+      u.lang = 'fr-FR';
+      window.speechSynthesis.speak(u);
+    }
+
+    function startTimer() {
+      if (timer) clearInterval(timer);
+      const box = document.getElementById('timerBox');
+      box.style.display = 'block';
+      timer = setInterval(() => {
+        if (seconds <= 0) {
+          clearInterval(timer);
+          box.innerText = "Temps écoulé ! 🔔";
+        } else {
+          const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+          const s = String(seconds % 60).padStart(2, '0');
+          box.innerText = `${m}:${s}`;
+          seconds--;
+        }
+      }, 1000);
+    }
+
+    function win() {
+      if (!currentItem) return;
+      stars++;
+      try { localStorage.setItem('defis_stars', stars); } catch(e){}
+      document.getElementById('stars').innerText = stars;
+      popConfetti();
+    }
+
+    function popConfetti() {
+      const c = document.getElementById('confetti');
+      const ctx = c.getContext('2d');
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
+      const p = Array.from({length: 60}).map(() => ({
+        x: Math.random() * c.width,
+        y: Math.random() * c.height - c.height,
+        color: ['#f59e0b', '#ec4899', '#3b82f6', '#10b981'][Math.floor(Math.random()*4)],
+        size: Math.random() * 6 + 4,
+        speed: Math.random() * 3 + 2
+      }));
+      let f = 0;
+      function run() {
+        ctx.clearRect(0,0,c.width,c.height);
+        p.forEach(k => { k.y += k.speed; ctx.fillStyle = k.color; ctx.fillRect(k.x, k.y, k.size, k.size); });
+        if (++f < 100) requestAnimationFrame(run);
+        else ctx.clearRect(0,0,c.width,c.height);
+      }
+      run();
+    }
+  </script>
+</body>
+</html>
